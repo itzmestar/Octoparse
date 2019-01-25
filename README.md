@@ -4,8 +4,11 @@
 -----------------------------------------
 
 ### Installation:
-use pip to install: pip install octoparse
-
+use pip to install: 
+```
+pip install octoparse
+```
+----------
 ### Example usage:
 ```
 from octoparse import Octoparse
