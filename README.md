@@ -3,6 +3,9 @@
 ## Unofficial Octoparse api client in python
 -----------------------------------------
 
+### Installation:
+use pip to install: pip install octoparse
+
 ### Example usage:
 ```
 from octoparse import Octoparse
