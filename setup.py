@@ -32,6 +32,7 @@ setuptools.setup(
     license=about['__license__'],
     classifiers=[
         "Programming Language :: Python :: 3",
+        "Programming Language :: Python :: 3.6",
         "License :: OSI Approved :: Apache Software License",
         "Operating System :: OS Independent",
     ],
