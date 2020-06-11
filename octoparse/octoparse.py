@@ -4,6 +4,7 @@ import os
 import pickle
 import requests
 import pandas as pd
+import getpass
 from datetime import datetime
 
 BASE_URL = 'https://dataapi.octoparse.com/'
@@ -124,7 +125,7 @@ class Octoparse:
         """
 
         username = input("Enter Octoparse Username: ")
-        password = input('Password: ')
+        password = getpass.getpass('Password: ')
         content = 'username={0}&password={1}&grant_type=password'.format(username, password)
         token_entity = requests.post(self.base_url + 'token', data=content).json()
 
