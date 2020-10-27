@@ -8,6 +8,11 @@ import getpass
 from datetime import datetime
 
 BASE_URL = 'https://dataapi.octoparse.com/'
+ADV_BASE_URL = 'http://advancedapi.octoparse.com/'
+
+# urls for china
+CHINA_BASE_URL = 'https://dataapi.bazhuayu.com/'
+CHINA_ADV_BASE_URL = 'https://advancedapi.bazhuayu.com/'
 
 # Helper Methods
 
@@ -65,12 +70,23 @@ class Octoparse:
     All the requests can be made through this class.
     """
 
-    def __init__(self, base_url=BASE_URL):
+    def __init__(self, advanced_api=False, china=False):
         """
-        :param base_url: url can be changed for advancedapi access
+        Initialize the object
+        :param advanced_api: whether use advanced api or not
+        :param china: access from china or not
         """
         self.token_entity = None
-        self.base_url = base_url
+        if advanced_api:
+            if china:
+                self.base_url = CHINA_ADV_BASE_URL
+            else:
+                self.base_url = ADV_BASE_URL
+        else:
+            if china:
+                self.base_url = CHINA_BASE_URL
+            else:
+                self.base_url = BASE_URL
         self._token_file = 'octoparse_token.pickle'
         self._read_token_file()
         self.refresh_token()
@@ -284,6 +300,131 @@ class Octoparse:
         params = {
             'taskId': task_id
         }
+        response = _post_request(self._get_url(path), self._get_access_token(), params=params)
+
+        return response
+
+    # below are Advanced API access functions
+
+    def get_task_status(self, task_id_list=[]):
+        """
+        This returns status of multiple tasks.
+        :param task_id_list: List of task's id
+        :return: List of status'
+        """
+        path = 'api/task/getTaskStatusByIdList'
+
+        params = {
+            "taskIdList": task_id_list
+        }
+
+        response = _post_request(self._get_url(path), self._get_access_token(), params=params)
+
+        return response
+
+    def get_task_params(self, task_id, name):
+        """
+        This returns the different parameters for a specific task,
+        for example, the URL from ‘Go To The Web Page’ action,
+        text value from ‘Enter Text’ action and text list/URL
+        list from ‘Loop Item’ action.
+
+        :param task_id: Task ID
+        :param name: Configuration parameter name (navigateAction1.Url,loopAction1.UrlList,loopAction1.TextList, etc.)
+        :return: Task parameters values (or value arrays) and request status
+        """
+        path = 'api/task/GetTaskRulePropertyByName'
+
+        params = {
+            "taskId": task_id,
+            'name': name
+        }
+
+        response = _post_request(self._get_url(path), self._get_access_token(), params=params)
+
+        return response
+
+    def update_task_param(self, task_id, name, value):
+        """
+        Use this method to update task parameters (currently only
+        available to updating URL in ‘Go To The Web Page’ action,
+        text value in ‘Enter Text’ action,
+        and text list/URL list in ‘Loop Item’ action).
+
+        :param task_id: Task ID
+        :param name: parameters name
+        :param value: parameters value
+        :return: The task parameter has been updated successfully or not.
+        """
+
+        path = 'api/task/updateTaskRule'
+
+        params = {
+            "taskId": task_id,
+            'name': name,
+            'value': value
+        }
+
+        response = _post_request(self._get_url(path), self._get_access_token(), params=params)
+
+        return response
+
+    def add_url_text_to_loop(self, task_id, name, value):
+        """
+        Use this method to add new URLs/text to an existing loop.
+
+        Note: For updating text list/URL list values, please use
+        [‘text1’, ’text2’, ’text3’,’textN’] to represent N items.
+
+        :param task_id: Task ID
+        :param name: parameters name
+        :param value: parameters value
+        :return: The new parameter values have been added successfully or not.
+        """
+
+        path = 'api/task/AddUrlOrTextToTask'
+
+        params = {
+            "taskId": task_id,
+            'name': name,
+            'value': value
+        }
+
+        response = _post_request(self._get_url(path), self._get_access_token(), params=params)
+
+        return response
+
+    def start_task(self, task_id):
+        """
+        Start Running Task
+        :param task_id: Task ID
+        :return: Status Codes ("data" parameter in response content): 1 = Task starts successfully,
+        2 = Task is running,
+        5 = Task Configuration is incorrect,
+        6 = Permission denied, 100 = Other Error
+        """
+        path = 'api/task/startTask'
+
+        params = {
+            "taskId": task_id
+        }
+
+        response = _post_request(self._get_url(path), self._get_access_token(), params=params)
+
+        return response
+
+    def stop_task(self, task_id):
+        """
+        Stop Running Task
+        :param task_id: Task ID
+        :return: The task has been stopped successfully or not.
+        """
+        path = 'api/task/stopTask'
+
+        params = {
+            "taskId": task_id
+        }
+
         response = _post_request(self._get_url(path), self._get_access_token(), params=params)
 
         return response
