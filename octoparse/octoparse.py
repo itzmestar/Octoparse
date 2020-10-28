@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*- #
 
 import os
+from dotenv import load_dotenv
 import pickle
 import requests
 import pandas as pd
@@ -76,6 +77,8 @@ class Octoparse:
         :param advanced_api: whether use advanced api or not
         :param china: access from china or not
         """
+        load_dotenv()
+
         self.token_entity = None
         if advanced_api:
             if china:
@@ -134,14 +137,18 @@ class Octoparse:
         """
         return self.base_url + path
 
+    def _get_credentials(self):
+        return (os.environ.get('OCTOPARSE_USERNAME'), os.environ.get('OCTOPARSE_PASSWORD'))
+
     def log_in(self):
         """
         Login & get a access token
         :return: token entity
         """
-
-        username = input("Enter Octoparse Username: ")
-        password = getpass.getpass('Password: ')
+        username, password = self._get_credentials()
+        if not username or not password:
+            username = input("Enter Octoparse Username: ")
+            password = getpass.getpass('Password: ')
         content = 'username={0}&password={1}&grant_type=password'.format(username, password)
         token_entity = requests.post(self.base_url + 'token', data=content).json()
 
@@ -166,6 +173,8 @@ class Octoparse:
             token_entity = response.json()
             refresh_token = token_entity.get('access_token', token_entity)
             self.token_entity = token_entity
+            # add time to token
+            self.token_entity['datetime'] = datetime.now()
             self._save_token_file()
             return refresh_token
         else:
