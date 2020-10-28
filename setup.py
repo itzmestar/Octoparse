@@ -8,6 +8,7 @@ packages = ['octoparse']
 requires = [
     'requests>=2.18.4',
     'pandas>=0.23.4',
+    'python-dotenv>=0.15.0',
 ]
 
 about = {}

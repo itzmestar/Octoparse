@@ -17,6 +17,12 @@ pip install octoparse
 ```
 -----------
 
+### Credentials:
+add the following varables to a `.env` file in the project directory to override manual input of username and password.
+ - `OCTOPARSE_USERNAME`
+ - `OCTOPARSE_PASSWORD`
+-----------
+
 ### Example usage:
 ```
 from octoparse import Octoparse
