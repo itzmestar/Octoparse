@@ -166,6 +166,8 @@ class Octoparse:
             token_entity = response.json()
             refresh_token = token_entity.get('access_token', token_entity)
             self.token_entity = token_entity
+            # add time to token
+            self.token_entity['datetime'] = datetime.now()
             self._save_token_file()
             return refresh_token
         else:
