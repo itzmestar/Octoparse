@@ -1,2 +1,3 @@
 octoparse/.env
 octoparse/__pycache__
+octoparse/octoparse_token.pickle
