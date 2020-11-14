@@ -2,6 +2,8 @@
 
 import os
 import pickle
+import time
+
 import requests
 import pandas as pd
 import getpass
@@ -17,11 +19,12 @@ CHINA_ADV_BASE_URL = 'https://advancedapi.bazhuayu.com/'
 # Helper Methods
 
 
-def _post_request(url, token, body=None):
+def _post_request(url, token, params=None, body=None):
     """
     Send a requests.post request
     :param url: URL
     :param token: authorization token
+    :param params: URL Parameters
     :param body: body to be sent with request
     :return: json of response
     """
@@ -30,9 +33,9 @@ def _post_request(url, token, body=None):
     }
 
     if body is None:
-        res = requests.post(url, headers=headers)
+        res = requests.post(url, headers=headers, params=params)
     else:
-        res = requests.post(url, headers=headers, data=body)
+        res = requests.post(url, headers=headers, params=params, data=body)
     if res.status_code == 200:
         pass
     else:
@@ -43,11 +46,10 @@ def _post_request(url, token, body=None):
 def _get_request(url, token, params=None):
     """
     Send a requests.get request
-    :param self:
-    :param path:
-    :param token:
-    :param params:
-    :return:
+    :param url: API url
+    :param token: API token
+    :param params: URL Parameters
+    :return: Response from server
     """
     headers = {
         'Authorization': 'bearer ' + token
@@ -108,6 +110,8 @@ class Octoparse:
         """
         Save token pickle file to disk
         """
+        if 'access_token' not in self.token_entity:
+            return
         with open(self._token_file, 'wb') as token:
             pickle.dump(self.token_entity, token)
 
@@ -174,16 +178,55 @@ class Octoparse:
             self.log_in()
             return self.token_entity['refresh_token']
 
-    def get_task_data(self, task_id, size=1000):
+    def is_task_running(self, task_id, time_gap=5):
+        """
+        Check if a Task is currently running. This isn't provided in Standard API.
+        We can detect if the No. of rows in Task increases over time_gap seconds.
+        :param task_id:  octoparse task id
+        :param time_gap: Time interval to check between
+        :return: Boolean True or False
+        """
+
+        params = {
+            'taskId': task_id,
+            'offset': 0,
+            'size': 10
+        }
+
+        path = 'api/alldata/GetDataOfTaskByOffset'
+
+        resp = _get_request(self._get_url(path),
+                            self._get_access_token(),
+                            params=params
+                            )
+        total1 = resp.get('data', {}).get('total', 0)
+
+        time.sleep(time_gap)
+
+        resp = _get_request(self._get_url(path),
+                            self._get_access_token(),
+                            params=params
+                            )
+        total2 = resp.get('data', {}).get('total', 0)
+
+        if total1 == total2:
+            return False
+        else:
+            return True
+
+    def get_task_data(self, task_id, size=1000, offset=0):
         """
         Fetch data for a task id
+        This method is only used to get data but will not affect the status of data.
+        (Non-exported data will still remain as non-exported)
 
         :param task_id: octoparse task id
         :param size: chunk size to be fetched in each request
+        :param offset: offset of data to be fetched from start
         :return: list of data dict
         """
 
-        offset = 0
+        offset = offset
         data_list = []
 
         path = 'api/alldata/GetDataOfTaskByOffset'
@@ -199,7 +242,7 @@ class Octoparse:
                                 self._get_access_token(),
                                 params=params
                                 )
-            data_list += data['data']['dataList']
+            data_list += data['data'].get('dataList', [])
 
             if data['data']['restTotal'] != 0:
                 offset = data['data']['offset']
@@ -216,7 +259,6 @@ class Octoparse:
 
         data = self.get_task_data(task_id)
         df = pd.DataFrame.from_dict(data)
-        df = df[list(data[0].keys())]
 
         return df
 
