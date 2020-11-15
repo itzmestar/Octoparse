@@ -1,9 +1,14 @@
 # Octoparse
 
-## Unofficial Octoparse API client in python
+--------
+[![Python 3.6](https://img.shields.io/badge/python-3.6-blue.svg)](https://www.python.org/downloads/release/python-360/)
+[![Python 3.7](https://img.shields.io/badge/python-3.7-blue.svg)](https://www.python.org/downloads/release/python-370/)
+[![Python 3.8](https://img.shields.io/badge/python-3.8-blue.svg)](https://www.python.org/downloads/release/python-380/)
+-------
 
-Now with support for Advanced API and China as well
------------
+### Unofficial Octoparse API client in python
+With support for Advanced API and China as well
+
 
 ### Installation:
 use pip to install:
@@ -32,7 +37,7 @@ groups = octo.list_all_task_groups()
 # List all tasks in a group
 tasks = octo.list_all_tasks_in_group(group_id='xxxx-ssdsd-1212')
 
-# Check if a Task is currently running. This isn't provided in Standard API.
+# Check if a task is currently running. This isn't provided in Standard API.
 status = octo.is_task_running(task_id='abcd-1234-djfsd-dfdf')
 
 # Export the not exported data
