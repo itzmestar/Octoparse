@@ -18,9 +18,30 @@ pip install octoparse
 -----------
 
 ### Credentials:
-include the following varables as environment variables or add them to a `.env` file in the project directory to override manual input of username and password.
- - `OCTOPARSE_USERNAME`
- - `OCTOPARSE_PASSWORD`
+3 methods are supported as below:
+##### 1) Support for ENV variables
+
+Include the following as environment variables: 
+ ```
+export OCTOPARSE_USERNAME=octoparse_user
+export OCTOPARSE_PASSWORD=octoparse_passwd
+ ```
+##### 2) Support for `.env` file
+
+Include the following in `.env` file in script directory:
+```
+OCTOPARSE_USERNAME=octoparse_user
+OCTOPARSE_PASSWORD=octoparse_passwd
+```
+
+##### 3) Manual input of username & password
+
+Input username & password manually once from prompt:
+```
+Enter Octoparse Username: octoparse_user
+Password: 
+```
+
 -----------
 
 ### Example usage:

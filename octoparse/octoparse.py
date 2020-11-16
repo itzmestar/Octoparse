@@ -67,6 +67,15 @@ def _get_request(url, token, params=None):
     return res.json()
 
 
+def _get_credentials():
+    """
+    read .env file and load env variables
+    :return:
+    """
+    load_dotenv()
+    return os.getenv('OCTOPARSE_USERNAME'), os.getenv('OCTOPARSE_PASSWORD')
+
+
 class Octoparse:
     """
     Octoparse class to act as octoparse api client.
@@ -79,7 +88,6 @@ class Octoparse:
         :param advanced_api: whether use advanced api or not
         :param china: access from china or not
         """
-        load_dotenv()
 
         self.token_entity = None
         if advanced_api:
@@ -94,7 +102,6 @@ class Octoparse:
                 self.base_url = BASE_URL
         self._token_file = 'octoparse_token.pickle'
         self._read_token_file()
-        self.refresh_token()
 
     def __del__(self):
         self._save_token_file()
@@ -141,15 +148,12 @@ class Octoparse:
         """
         return self.base_url + path
 
-    def _get_credentials(self):
-        return (os.environ.get('OCTOPARSE_USERNAME'), os.environ.get('OCTOPARSE_PASSWORD'))
-
     def log_in(self):
         """
         Login & get a access token
         :return: token entity
         """
-        username, password = self._get_credentials()
+        username, password = _get_credentials()
         if not username or not password:
             username = input("Enter Octoparse Username: ")
             password = getpass.getpass('Password: ')
