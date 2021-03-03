@@ -227,7 +227,10 @@ class Octoparse:
 
     def get_task_data(self, task_id, size=1000, offset=0):
         """
-        Fetch data for a task id
+        Fetch data for a task id.
+        This will fetch all the data rows present for the task starting from offset
+        till the end of data. It may be a blocking call. If you are interested in
+        only a subset of data get_data_by_offset() may be better option.
         This method is only used to get data but will not affect the status of data.
         (Non-exported data will still remain as non-exported)
 
@@ -264,6 +267,10 @@ class Octoparse:
     def get_task_data_df(self, task_id):
         """
         Fetch data for a task id & returns it as pandas.DataFrame
+        This will fetch all the data rows present for the task starting from offset
+        till the end of data. It may be a blocking call. If you are interested in
+        only a subset of data get_data_by_offset() may be better option.
+
         :param task_id: octoparse task id
         :return: pandas.DataFrame data
         """
@@ -272,6 +279,45 @@ class Octoparse:
         df = pd.DataFrame.from_dict(data)
 
         return df
+
+    def get_data_by_offset(self, task_id, size=1000, offset=0):
+        """
+        Fetch data for a task starting from the offset. Only rows equal to less than
+        size will be fetched & returned.
+
+        Offset should default to 0 (offset=0), and size∈[1,1000] for
+        making the initial request. The offset returned (could be any value greater
+        than 0) should be used for making the next request. For example, if a task
+        has 1000 data rows, using parameter: offset = 0, size = 100 will return the
+        first 100 rows of data and the offset X (X can be any random number greater
+        than or equal to 100). When making the second request, user should use the
+        offset returned from the first request, offset = X, size = 100 to get the
+        next 100 rows of data (row 101 to 200) as well as the new offset to use for
+        the request follows.
+        This method is only used to get data but will not affect the status of data.
+        (Non-exported data will still remain as non-exported)
+        :param task_id: octoparse task id
+        :param size: rows to be fetched (max: 1000)
+        :param offset: offset of data to be fetched from start
+        :return: list of data dict
+        """
+        data = list()
+
+        path = 'api/alldata/GetDataOfTaskByOffset'
+
+        params = {
+            'taskId': task_id,
+            'offset': offset,
+            'size': size
+        }
+
+        response = _get_request(self._get_url(path),
+                            self._get_access_token(),
+                            params=params
+                            )
+        if 'data' in response:
+            data = response['data'].get('dataList', [])
+        return data
 
     def clear_task_data(self, task_id):
         """

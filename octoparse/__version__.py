@@ -2,7 +2,7 @@
 __title__ = 'octoparse'
 __description__ = 'Unofficial Octoparse API client.'
 __url__ = 'https://github.com/itzmestar/Octoparse'
-__version__ = '1.4.0'
+__version__ = '1.5.0'
 __build__ = 0x010001
 __author__ = 'Tarique Anwer'
 __author_email__ = 'itzmetariq@gmail.com'

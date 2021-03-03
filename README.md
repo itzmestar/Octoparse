@@ -76,11 +76,15 @@ data = octo.get_not_exported_data(task_id='abcd-1234-djfsd-dfdf', size=100)
 # Update data status
 resp = octo.update_data_status(task_id='abcd-1234-djfsd-dfdf')
 
-# get data for a task with task id: 'abcd-1234-djfsd-dfdf'
+# get all the data for a task with task id: 'abcd-1234-djfsd-dfdf'
 data = octo.get_task_data(task_id='abcd-1234-djfsd-dfdf')
 
-# get task data as a pandas.DataFrame for a task with task id: 'abcd-1234-djfsd-dfdf'
+# get all the task data as a pandas.DataFrame for a task with task id: 'abcd-1234-djfsd-dfdf'
 df = octo.get_task_data_df(task_id='abcd-1234-djfsd-dfdf')
+
+# get an offset of data for a task with task id: 'abcd-1234-djfsd-dfdf'
+# e.g get 100 rows starting from 200
+data = octo.get_task_data(task_id='abcd-1234-djfsd-dfdf', offset=200, size=100)
 
 # clear data for a task with task id: 'abcd-1234-djfsd-dfdf'
 octo.clear_task_data(task_id='abcd-1234-djfsd-dfdf')

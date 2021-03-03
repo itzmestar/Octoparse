@@ -161,6 +161,40 @@ def test_get_task_data_df(octoparse):
         assert df.equals(data_df)
 
 
+def test_get_data_by_offset(octoparse):
+    """
+        Test get_data_by_offset
+    """
+    TASK_ID = "a08f6125-e2b5-3878-5690-ded1ed971349"
+    dataList = [
+        {
+            "state": "Texas",
+            "city": "Plano"
+        },
+        {
+            "state": "Texas",
+            "city": "Houston"
+        },
+        {
+            "state": "Texas",
+            "city": "Austin"
+        },
+        {
+            "state": "Texas",
+            "city": "Arlington"
+        }
+    ]
+    RESP_DATA = {"data": {"offset": 2, "total": 4, "restTotal": 6,
+                          "dataList": dataList}, 'error': 'success', 'error_Description': 'Operation successes.'}
+    path = BASE_URL + 'api/alldata/GetDataOfTaskByOffset?taskId={}&offset=2&size=4'.format(TASK_ID)
+    with responses.RequestsMock(assert_all_requests_are_fired=False) as rsps:
+        rsps.add(responses.GET, path,
+                 json=RESP_DATA, status=200
+                 )
+        data = octoparse.get_data_by_offset(task_id=TASK_ID, offset=2, size=4)
+        assert data == dataList
+
+
 #@pytest.mark.skip(reason="no way of currently testing this")
 def test_clear_task_data(octoparse):
     """
