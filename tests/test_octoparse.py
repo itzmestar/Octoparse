@@ -199,7 +199,6 @@ def test_get_data_by_offset(octoparse):
 def test_clear_task_data(octoparse):
     """
         Test clear_task_data
-
     """
     task_id = "a08f6125-e2b5-3878-5690-ded1ed971349"
     path = BASE_URL + 'api/task/removeDataByTaskId?taskId={}'.format(task_id)

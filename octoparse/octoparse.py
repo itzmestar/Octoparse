@@ -245,6 +245,9 @@ class Octoparse:
 
         path = 'api/alldata/GetDataOfTaskByOffset'
 
+        if size > 1000:
+            size = 1000
+
         while True:
             params = {
                 'taskId': task_id,
@@ -305,6 +308,9 @@ class Octoparse:
 
         path = 'api/alldata/GetDataOfTaskByOffset'
 
+        if size > 1000:
+            size = 1000
+
         params = {
             'taskId': task_id,
             'offset': offset,
@@ -318,6 +324,43 @@ class Octoparse:
         if 'data' in response:
             data = response['data'].get('dataList', [])
         return data
+
+    def get_task_data_generator(self, task_id, size=1000, offset=0):
+        """
+        Fetch data for a task id.
+        This will fetch all the data rows present for the task starting from offset
+        till the end of data.
+        This is a generator so can be easily used in a loop.
+        This method is only used to get data but will not affect the status of data.
+        (Non-exported data will still remain as non-exported)
+
+        :param task_id: octoparse task id
+        :param size: chunk size to be fetched in each request
+        :param offset: offset of data to be fetched from start
+        :return: list of data dict
+        """
+
+        offset = offset
+
+        path = 'api/alldata/GetDataOfTaskByOffset'
+
+        while True:
+            params = {
+                'taskId': task_id,
+                'offset': offset,
+                'size': size
+            }
+
+            response = _get_request(self._get_url(path),
+                                self._get_access_token(),
+                                params=params
+                                )
+            yield response['data'].get('dataList', [])
+
+            if response['data']['restTotal'] != 0:
+                offset = response['data']['offset']
+            else:
+                return
 
     def clear_task_data(self, task_id):
         """
