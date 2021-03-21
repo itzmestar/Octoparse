@@ -84,7 +84,7 @@ df = octo.get_task_data_df(task_id='abcd-1234-djfsd-dfdf')
 
 # get an offset of data for a task with task id: 'abcd-1234-djfsd-dfdf'
 # e.g get 100 rows starting from 200
-data = octo.get_task_data(task_id='abcd-1234-djfsd-dfdf', offset=200, size=100)
+data = octo.get_data_by_offset(task_id='abcd-1234-djfsd-dfdf', offset=200, size=100)
 
 # fetch task data in a loop using the generator function:
 for data in octo.get_task_data_generator(task_id='abcd-1234-djfsd-dfdf', offset=200, size=100):
